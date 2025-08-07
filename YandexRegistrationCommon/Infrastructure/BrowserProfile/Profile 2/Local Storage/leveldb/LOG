@@ -1,0 +1,6 @@
+2025/07/31-08:41:16.650 3df8 Reusing MANIFEST C:\Users\dudin\AppData\Local\Google\Chrome\User Data\Profile 2\Local Storage\leveldb/MANIFEST-000001
+2025/07/31-08:41:16.652 3df8 Recovering log #3
+2025/07/31-08:41:16.655 3df8 Reusing old log C:\Users\dudin\AppData\Local\Google\Chrome\User Data\Profile 2\Local Storage\leveldb/000003.log 
+2025/07/31-08:41:31.978 3678 Level-0 table #5: started
+2025/07/31-08:41:31.988 3678 Level-0 table #5: 50246 bytes OK
+2025/07/31-08:41:31.994 3678 Delete type=0 #3

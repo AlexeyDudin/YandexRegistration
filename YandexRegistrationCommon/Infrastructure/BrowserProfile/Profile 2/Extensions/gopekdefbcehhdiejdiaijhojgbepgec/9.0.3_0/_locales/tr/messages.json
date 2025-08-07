@@ -1,0 +1,23 @@
+{
+   "ctxSearchMessage": {
+      "message": "Bulmak için Yandex.Video \"%s\""
+   },
+   "ctxSearchMessageArchive": {
+      "message": "Bulmak için Yandex.Archive \"%s\""
+   },
+   "ctxSearchUrl": {
+      "message": "https://yandex.com.tr/video/search?text=__QUERY__&from=searchext"
+   },
+   "ctxSearchUrlArchive": {
+      "message": "https://yandex.com/archive/search?text=__QUERY__&from=homesearchext"
+   },
+   "description": {
+      "message": "Sorguları adres satırına girin ve Yandex'ten yanıtları alın"
+   },
+   "name": {
+      "message": "Arama ve başlangıç sayfası — Yandex"
+   },
+   "searchName": {
+      "message": "Yandex"
+   }
+}

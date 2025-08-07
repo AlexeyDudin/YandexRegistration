@@ -1,0 +1,23 @@
+{
+   "ctxSearchMessage": {
+      "message": "Найти на Яндекс.Кью \"%s\""
+   },
+   "ctxSearchMessageArchive": {
+      "message": "Найти в поиске Яндекса по архивам \"%s\""
+   },
+   "ctxSearchUrl": {
+      "message": "https://yandex.ru/q/search?text=__QUERY__&from=searchext"
+   },
+   "ctxSearchUrlArchive": {
+      "message": "https://yandex.ru/archive/search?text=__QUERY__&from=homesearchext"
+   },
+   "description": {
+      "message": "Вводите запросы в адресную строку и получайте ответы от Яндекса"
+   },
+   "name": {
+      "message": "Поиск и стартовая — Яндекс"
+   },
+   "searchName": {
+      "message": "Яндекс"
+   }
+}

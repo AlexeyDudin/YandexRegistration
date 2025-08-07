@@ -1,0 +1,226 @@
+﻿<metro:MetroWindow
+    x:Class="YandexRegistration.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:YandexRegistration.Converters"
+    xmlns:customControls="clr-namespace:YandexRegistration.CustomControls.MultiSelectTreeView"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enums="clr-namespace:YandexRegistrationModel.Enums;assembly=YandexRegistrationModel"
+    xmlns:local="clr-namespace:YandexRegistration"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:vm="clr-namespace:YandexRegistrationViewModel;assembly=YandexRegistrationViewModel"
+    Title="Yandex регистратор"
+    Width="1024"
+    Height="768"
+    d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    Closing="MetroWindow_Closing"
+    mc:Ignorable="d">
+    <metro:MetroWindow.Resources>
+        <converters:NullToVisibleConverter x:Key="NullToVisibleConverter" />
+        <converters:NullToTextConverter x:Key="NullToTextConverter" />
+        <converters:StatusToBrushConverter x:Key="StatusToBrushConverter" />
+    </metro:MetroWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="50" />
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Файл">
+                <MenuItem
+                    x:Name="SaveTaskButton"
+                    Click="SaveTaskButton_Click"
+                    Header="Сохранить" />
+                <MenuItem
+                    x:Name="OpenTaskButton"
+                    Click="OpenTaskButton_Click"
+                    Header="Открыть" />
+            </MenuItem>
+        </Menu>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="3" />
+                <ColumnDefinition Width="5*" />
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="50" />
+                </Grid.RowDefinitions>
+                <customControls:MultiSelectTreeView
+                    x:Name="TreeViewTasks"
+                    ItemsSource="{Binding SortedTasks}"
+                    SelectedItemChanged="TreeViewTasks_SelectedItemChanged">
+                    <customControls:MultiSelectTreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding}">
+                            <TextBlock FontWeight="Bold" Text="{Binding Key, Converter={StaticResource NullToTextConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <DataTemplate>
+                                    <!--  Шаблон для дочерних элементов (задач)  -->
+                                    <Grid Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}">
+                                        <TextBlock Margin="5" Text="{Binding StringId}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </customControls:MultiSelectTreeView.ItemTemplate>
+                </customControls:MultiSelectTreeView>
+                <!--<DataGrid
+                    x:Name="DataGridTasks"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    ItemsSource="{Binding SortedTasks}"
+                    SelectedItem="{Binding SelectedTask, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Expander Header="{Binding Key, Converter={StaticResource NullToTextConverter}}">
+                                        <DataGrid
+                                            AutoGenerateColumns="False"
+                                            CanUserAddRows="False"
+                                            CanUserDeleteRows="False"
+                                            ItemsSource="{Binding}">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn
+                                                    Width="*"
+                                                    Binding="{Binding Path=StringId, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    Header="Задания">
+                                                    <DataGridTextColumn.CellStyle>
+                                                        <Style BasedOn="{StaticResource MahApps.Styles.DataGridCell}" TargetType="DataGridCell">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static enums:YandexTaskStatus.Error}">
+                                                                    <Setter Property="Background" Value="Red" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static enums:YandexTaskStatus.Started}">
+                                                                    <Setter Property="Background" Value="LightBlue" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Status}" Value="{x:Static enums:YandexTaskStatus.Ok}">
+                                                                    <Setter Property="Background" Value="LightGreen" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </DataGridTextColumn.CellStyle>
+                                                </DataGridTextColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Expander>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>-->
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button
+                        x:Name="NewTaskButton"
+                        Grid.Column="0"
+                        Margin="5"
+                        Click="NewTaskButton_Click">
+                        <Button.Content>
+                            <TextBlock
+                                Text="ДОБАВИТЬ ЗАДАНИЕ"
+                                TextAlignment="Center"
+                                TextWrapping="WrapWithOverflow" />
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        x:Name="CloneTasksButton"
+                        Grid.Column="1"
+                        Margin="5"
+                        Click="CloneTasksButton_Click">
+                        <Button.Content>
+                            <TextBlock
+                                Text="СКЛОНИРОВАТЬ ЗАДАНИЕ"
+                                TextAlignment="Center"
+                                TextWrapping="WrapWithOverflow" />
+                        </Button.Content>
+                    </Button>
+                    <Button
+                        x:Name="RemoveTasksButton"
+                        Grid.Column="2"
+                        Margin="5"
+                        Click="RemoveTasksButton_Click">
+                        <Button.Content>
+                            <TextBlock
+                                Text="УДАЛИТЬ ЗАДАНИЕ"
+                                TextAlignment="Center"
+                                TextWrapping="WrapWithOverflow" />
+                        </Button.Content>
+                    </Button>
+                </Grid>
+            </Grid>
+            <GridSplitter Grid.Column="1" />
+            <Grid Grid.Column="2" Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibleConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock
+                        Margin="5"
+                        VerticalAlignment="Center"
+                        Text="Запускать с помощью: " />
+                    <RadioButton
+                        Margin="5"
+                        Content="Chrome"
+                        IsChecked="{Binding Path=SelectedTask.IsChromeBrowser, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                    <RadioButton
+                        Margin="5"
+                        Content="Yandex browser"
+                        IsChecked="{Binding Path=SelectedTask.IsYandexBrowser, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
+                </StackPanel>
+                <DataGrid
+                    Grid.Row="1"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="True"
+                    ItemsSource="{Binding Path=SelectedTask.Queries, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Header="Искомые запросы" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                <TextBlock
+                    Grid.Row="2"
+                    Text="{Binding SelectedTask.ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="WrapWithOverflow" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="120" />
+            </Grid.ColumnDefinitions>
+
+            <metro:NumericUpDown
+                Margin="5"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                metro:TextBoxHelper.AutoWatermark="True"
+                metro:TextBoxHelper.UseFloatingWatermark="True"
+                metro:TextBoxHelper.Watermark="Количество одновременных процессов"
+                metro:TextBoxHelper.WatermarkAlignment="Left"
+                Minimum="1"
+                TextAlignment="Left"
+                Value="{Binding CountThreads}" />
+
+            <Button
+                x:Name="StartButton"
+                Grid.Column="1"
+                Margin="5"
+                Click="StartButton_Click"
+                Content="Запуск" />
+        </Grid>
+    </Grid>
+</metro:MetroWindow>
