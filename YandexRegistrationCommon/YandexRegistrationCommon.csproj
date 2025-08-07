@@ -25,6 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Infrastructure\Binary\Chrome\chromedriver.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Infrastructure\BrowserExtension\LADDJIJKCFPAKBBNNEDBHNNCIECIDNCP_9_0_8_0.crx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -34,7 +37,7 @@
     <None Update="Infrastructure\YandexBinary\chromedriver">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Infrastructure\YandexBinary\chromedriver.exe">
+    <None Update="Infrastructure\Binary\Yandex\chromedriver.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

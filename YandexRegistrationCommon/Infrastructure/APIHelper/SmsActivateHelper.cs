@@ -18,7 +18,7 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
         public SmsActivateHelper()
         {
             _token = SettingsHelper.SmsActivateToken;
-            _webDriver = new ChromeDriver();
+            _webDriver = new ChromeDriver(Path.Combine("Infrastructure", "Binary", "Chrome"));
         }
 
         public async Task<SmsActivateDto> GetNewPhoneNumber()
@@ -62,7 +62,7 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
             while (stopwatch.Elapsed.TotalSeconds < timeoutSeconds)
             {
                 _webDriver.Navigate().GoToUrl(_getSmsUrl);
-                var status = _webDriver.PageSource;
+                var status = _webDriver.FindElement(By.TagName("body")).Text;
                 if (status.StartsWith("STATUS_OK:"))
                 {
                     // Возвращаем код SMS

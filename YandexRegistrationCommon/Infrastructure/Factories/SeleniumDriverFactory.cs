@@ -17,14 +17,14 @@ namespace YandexRegistrationCommon.Infrastructure.Factories
                     if (!File.Exists(yandexBrowserPath))
                         throw new FileNotFoundException("Яндекс браузер не установлен!");
                     options.BinaryLocation = yandexBrowserPath;
-                    return new ChromeDriver(options);
+                    return new ChromeDriver(Path.Combine("Infrastructure", "Binary", "Yandex"), options);
                 case YandexRegistrationModel.Enums.BrowserType.Chrome:
                 default:
                     string chromeProfilePath = CloneProfile(task);
                     options.AddArgument($"--user-data-dir={chromeProfilePath}"); // Путь к папке с профилем
                     options.AddArgument("--profile-directory=Profile 2");
                     options.AddArgument("--disable-blink-features=AutomationControlled");
-                    return new ChromeDriver(options);
+                    return new ChromeDriver(Path.Combine("Infrastructure", "Binary", "Chrome"), options);
             }
         }
 

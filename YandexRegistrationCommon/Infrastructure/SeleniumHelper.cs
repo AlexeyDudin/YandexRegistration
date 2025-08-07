@@ -39,23 +39,26 @@ namespace YandexRegistrationCommon.Infrastructure
 
                 if (!_task.IsUserRegistered)
                 {
-                    string query = "Яндекс";
-                    string encodedQuery = Uri.EscapeDataString(query);
-                    string url = $"https://yandex.ru/search/?text={encodedQuery}";
-                    webDriver.Navigate().GoToUrl(url);
-
-                    if (IsCaptchaView(webDriver))
+                    IWebElement element;
+                    if (_task.IsChromeBrowser)
                     {
-                        await SolveCapthcha(wait, webDriver);
+                        string query = "Яндекс";
+                        string encodedQuery = Uri.EscapeDataString(query);
+                        string url = $"https://yandex.ru/search/?text={encodedQuery}";
                         webDriver.Navigate().GoToUrl(url);
+
+                        if (IsCaptchaView(webDriver))
+                        {
+                            await SolveCapthcha(wait, webDriver);
+                            webDriver.Navigate().GoToUrl(url);
+                        }
+
+                        // Ждем пока элемент с определенным селектором появится и станет кликабельным
+                        element = webDriver.FindElement(By.XPath("//a[.//span[contains(text(),'Получить бонус')]]"));
+                        element.Click();
+
+                        webDriver.SwitchTo().Window(webDriver.WindowHandles[1]);
                     }
-
-                    // Ждем пока элемент с определенным селектором появится и станет кликабельным
-                    IWebElement element = webDriver.FindElement(By.XPath("//a[.//span[contains(text(),'Получить бонус')]]"));
-                    element.Click();
-
-                    webDriver.SwitchTo().Window(webDriver.WindowHandles[1]);
-
                     var smsModelDto = await _smsActivateHelper.GetNewPhoneNumber();
 
                     //Send phone number
@@ -67,9 +70,12 @@ namespace YandexRegistrationCommon.Infrastructure
                     element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("phone-auth-section__submit-button")));
                     element.Click();
 
-                    //Click next button
-                    element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//button[.//span[contains(text(), 'Далее')]]")));
-                    element.Click();
+                    if (_task.IsChromeBrowser)
+                    {
+                        //Click next button
+                        element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//button[.//span[contains(text(), 'Далее')]]")));
+                        element.Click();
+                    }
 
                     bool isSmsIncome = false;
                     for (int i = 1; i < _countSmsRetryes; i++)
