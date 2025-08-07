@@ -36,7 +36,7 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
                 }
             }
 
-            return null;
+            throw new ApplicationException(_webDriver.FindElement(By.TagName("body")).Text);
         }
 
         public async Task SetActivationStatuAwaitSMS(long id)

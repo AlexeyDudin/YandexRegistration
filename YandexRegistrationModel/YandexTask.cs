@@ -18,7 +18,12 @@ namespace YandexRegistrationModel
         private string _secondNameForRegistration = string.Empty;
         private User _registeredUser = null;
 
-        public YandexTask(uint id) => _id = id;
+        public YandexTask(uint id)
+        {
+            _id = id;
+            UserNameForRegistration = NameHelper.GetRandomName();
+            SecondNameForRegistration = NameHelper.GetRandomSecondName();
+        }
 
         public BrowserType BrowserType
         {
@@ -143,6 +148,8 @@ namespace YandexRegistrationModel
                 BrowserType = this.BrowserType,
                 Queries = new ObservableCollection<Query>(Queries.Select(q => new Query() { Value = q.Value }).ToList()),
                 UseProxy = this.UseProxy,
+                UserNameForRegistration = NameHelper.GetRandomName(),
+                SecondNameForRegistration = NameHelper.GetRandomSecondName()
             };
         }
 
