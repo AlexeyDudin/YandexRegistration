@@ -163,6 +163,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -202,8 +203,16 @@
                         metro:TextBoxHelper.Watermark="Фамилия пользователя при регистрации"
                         Text="{Binding SelectedTask.SecondNameForRegistration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
-                <DataGrid
+                <TextBox
                     Grid.Row="2"
+                    Margin="5"
+                    VerticalContentAlignment="Center"
+                    metro:TextBoxHelper.AutoWatermark="True"
+                    metro:TextBoxHelper.UseFloatingWatermark="True"
+                    metro:TextBoxHelper.Watermark="Реферальная ссылка"
+                    Text="{Binding SelectedTask.ReferalUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <DataGrid
+                    Grid.Row="3"
                     AutoGenerateColumns="False"
                     CanUserAddRows="True"
                     ItemsSource="{Binding Path=SelectedTask.Queries, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -215,7 +224,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
                 <TextBlock
-                    Grid.Row="3"
+                    Grid.Row="4"
                     Text="{Binding SelectedTask.ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                     TextWrapping="WrapWithOverflow" />
             </Grid>

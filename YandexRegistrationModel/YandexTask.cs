@@ -9,13 +9,15 @@ namespace YandexRegistrationModel
     public class YandexTask : INotifyPropertyChanged
     {
         private uint _id;
-        private BrowserType _browserType = BrowserType.Chrome;
+        private BrowserType _browserType;
         private ObservableCollection<Query> _queries = new ObservableCollection<Query>();
         private bool _useProxy = true;
         private YandexTaskStatus _status = YandexTaskStatus.NotStarted;
         private string _errorMessage = string.Empty;
         private string _userNameForRegistration = string.Empty;
         private string _secondNameForRegistration = string.Empty;
+        private string _referalUrl = string.Empty;
+        private bool _isReferalUrlUserChanged = false;
         private User _registeredUser = null;
 
         public YandexTask(uint id)
@@ -23,6 +25,7 @@ namespace YandexRegistrationModel
             _id = id;
             UserNameForRegistration = NameHelper.GetRandomName();
             SecondNameForRegistration = NameHelper.GetRandomSecondName();
+            BrowserType = BrowserType.Chrome;
         }
 
         public BrowserType BrowserType
@@ -31,6 +34,19 @@ namespace YandexRegistrationModel
             set
             {
                 _browserType = value;
+                if (!_isReferalUrlUserChanged)
+                {
+                    switch (BrowserType)
+                    {
+                        case BrowserType.YandexBrowser:
+                            _referalUrl = "https://yandex.ru/portal/set/default_search?retpath=https%3A%2F%2Fyandex.ru%2Fportal%2Fdefsearchpromo%2Fcode&source=6Fh0sP41TKKNn40849&utm_term=---autotargeting&banerid=1200006600&utm_campaign=rsya_promocodes_feb|118152200&utm_medium=rsya&partner_string=mkBRX5h1TnuF632835&from=direct_rsya&yclid=12933870030752841727&utm_content=5545661305|16870771503&utm_source=yandex";
+                            break;
+                        default:
+                            _referalUrl = "https://yandex.ru/portal/defsearchpromo/landing/ru_mobile400?partner=fYM1bbd1U7yNZ47082&offer_type=dXKT5C51U7yNt47078&utm_source=promocodes_ru&utm_medium=tbank400tel&utm_campaign=200&utm_content=250620250&clckid=6a234ddb";
+                            break;
+                    }
+                    OnPropertyChanged(nameof(ReferalUrl));
+                }
                 OnPropertyChanged();
             }
         }
@@ -137,6 +153,17 @@ namespace YandexRegistrationModel
             set
             {
                 _secondNameForRegistration = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ReferalUrl 
+        {
+            get => _referalUrl;
+            set
+            {
+                _referalUrl = value;
+                _isReferalUrlUserChanged = true;
                 OnPropertyChanged();
             }
         }

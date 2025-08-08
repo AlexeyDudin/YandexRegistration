@@ -182,16 +182,17 @@ namespace YandexRegistrationCommon.Infrastructure
 
         private void GotoUrl(IWebDriver webDriver)
         {
-            switch (_task.BrowserType)
-            {
-                case BrowserType.YandexBrowser:
-                    webDriver.Navigate().GoToUrl("https://yandex.ru/portal/set/default_search?retpath=https%3A%2F%2Fyandex.ru%2Fportal%2Fdefsearchpromo%2Fcode&source=6Fh0sP41TKKNn40849&utm_term=---autotargeting&banerid=1200006600&utm_campaign=rsya_promocodes_feb|118152200&utm_medium=rsya&partner_string=mkBRX5h1TnuF632835&from=direct_rsya&yclid=12933870030752841727&utm_content=5545661305|16870771503&utm_source=yandex");
-                    break;
-                case BrowserType.Chrome:
-                default:
-                    webDriver.Navigate().GoToUrl("https://yandex.ru/portal/defsearchpromo/landing/ru_mobile400?partner=fYM1bbd1U7yNZ47082&offer_type=dXKT5C51U7yNt47078&utm_source=promocodes_ru&utm_medium=tbank400tel&utm_campaign=200&utm_content=250620250&clckid=6a234ddb");
-                    break;
-            }
+            webDriver.Navigate().GoToUrl(_task.ReferalUrl);
+            //switch (_task.BrowserType)
+            //{
+            //    case BrowserType.YandexBrowser:
+            //        webDriver.Navigate().GoToUrl("https://yandex.ru/portal/set/default_search?retpath=https%3A%2F%2Fyandex.ru%2Fportal%2Fdefsearchpromo%2Fcode&source=6Fh0sP41TKKNn40849&utm_term=---autotargeting&banerid=1200006600&utm_campaign=rsya_promocodes_feb|118152200&utm_medium=rsya&partner_string=mkBRX5h1TnuF632835&from=direct_rsya&yclid=12933870030752841727&utm_content=5545661305|16870771503&utm_source=yandex");
+            //        break;
+            //    case BrowserType.Chrome:
+            //    default:
+            //        webDriver.Navigate().GoToUrl("https://yandex.ru/portal/defsearchpromo/landing/ru_mobile400?partner=fYM1bbd1U7yNZ47082&offer_type=dXKT5C51U7yNt47078&utm_source=promocodes_ru&utm_medium=tbank400tel&utm_campaign=200&utm_content=250620250&clckid=6a234ddb");
+            //        break;
+            //}
         }
 
         public void Dispose()
