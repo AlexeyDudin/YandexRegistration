@@ -5,5 +5,6 @@
         public string SmsActivateToken { get; set; } = string.Empty;
         public string ProxyToken { get; set; } = string.Empty;
         public string RuCaptchaToken { get; set; } = string.Empty;
+        public string VacSmsToken { get; set; } = string.Empty;
     }
 }

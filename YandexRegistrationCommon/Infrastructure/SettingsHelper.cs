@@ -55,5 +55,15 @@ namespace YandexRegistrationCommon.Infrastructure
                 return _setting.RuCaptchaToken;
             }
         }
+
+        public static string VacSmsToken
+        {
+            get
+            {
+                if (_setting == null)
+                    LoadSetting();
+                return _setting.VacSmsToken;
+            }
+        }
     }
 }

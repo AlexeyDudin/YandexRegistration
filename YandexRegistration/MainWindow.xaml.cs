@@ -15,7 +15,7 @@ namespace YandexRegistration
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            DataContext = new MainViewModel(Dispatcher);
         }
 
         private void StartButton_Click(object sender, RoutedEventArgs e)
@@ -38,14 +38,15 @@ namespace YandexRegistration
         {
             if (DataContext is MainViewModel vModel)
             {
-                vModel.CloneTask((YandexTask)TreeViewTasks.SelectedItem);
-                //foreach (var dataGridItem in DataGridTasks.Items.<DataGrid>())
-                //{
-                //    foreach (var task in DataGridTasks.SelectedItems.Cast<YandexTask>().OrderBy(t => t.Id))
-                //    {
-                //        vModel.CloneTask(task);
-                //    }
-                //}
+                if (vModel.SelectedObject is YandexTask task)
+                    vModel.CloneTask(task);
+                else if (vModel.SelectedObject is GroupingYandexTaskViewModel gTasks)
+                {
+                    foreach (var t in gTasks.Tasks.ToList())
+                    {
+                        vModel.CloneTask(t);
+                    }
+                }
             }
         }
 
@@ -53,11 +54,23 @@ namespace YandexRegistration
         {
             if (DataContext is MainViewModel vModel)
             {
-                vModel.RemoveTask((YandexTask)TreeViewTasks.SelectedItem);
-                //foreach (var task in TreeViewTasks.Selected.SelectedItems.Cast<YandexTask>().OrderBy(t => t.Id))
-                //{
-                //    vModel.RemoveTask(task);
-                //}
+                if (vModel.SelectedObject is YandexTask)
+                {
+                    vModel.RemoveTask(vModel.SelectedTask);
+                }
+                else if (vModel.SelectedObject is GroupingYandexTaskViewModel gTasks)
+                {
+                    var messageBox = MessageBox.Show("Вы действительно хотите удалить группу заданий?", "Удалить?", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                    if (messageBox == MessageBoxResult.Yes)
+                    {
+                        while (gTasks != null && gTasks.Tasks.Count != 0)
+                        {
+                            var task = gTasks.Tasks[0];
+                            vModel.RemoveTask(task);
+                        }
+                        vModel.SelectedObject = null;
+                    }
+                }
             }
         }
 
@@ -103,10 +116,7 @@ namespace YandexRegistration
         {
             if (DataContext is MainViewModel vModel)
             {
-                if (e.NewValue is YandexTask task)
-                    vModel.SelectedTask = task;
-                else
-                    vModel.SelectedTask = null;
+                vModel.SelectedObject = e.NewValue;
             }
         }
     }

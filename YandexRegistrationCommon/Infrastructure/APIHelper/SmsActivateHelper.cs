@@ -2,7 +2,7 @@
 using OpenQA.Selenium.Chrome;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using YandexRegistrationCommon.Infrastructure.Models;
+using YandexRegistrationModel;
 
 namespace YandexRegistrationCommon.Infrastructure.APIHelper
 {
@@ -30,8 +30,8 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
                 if (splitedResultParams.Length == 3)
                 {
                     var result = new SmsActivateDto();
-                    result.Id = long.Parse(splitedResultParams[1]);
-                    result.Phone = ulong.Parse(_phoneRegEx.Match(splitedResultParams[2]).Value);
+                    result.Id = splitedResultParams[1];
+                    result.Phone = _phoneRegEx.Match(splitedResultParams[2]).Value;
                     return result;
                 }
             }
@@ -39,19 +39,19 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
             throw new ApplicationException(_webDriver.FindElement(By.TagName("body")).Text);
         }
 
-        public async Task SetActivationStatuAwaitSMS(long id)
+        public async Task SetActivationStatuAwaitSMS(string id)
         {
-            await _webDriver.Navigate().GoToUrlAsync($"https://api.sms-activate.ae/stubs/handler_api.php?api_key={_token}&action=setStatus&status=1&id={id}");
+            await Task.Run(() => _webDriver.Navigate().GoToUrl($"https://api.sms-activate.ae/stubs/handler_api.php?api_key={_token}&action=setStatus&status=1&id={id}"));
         }
 
-        public async Task SetSmsOk(long id)
+        public async Task SetSmsOk(string id)
         {
-            await _webDriver.Navigate().GoToUrlAsync($"https://api.sms-activate.ae/stubs/handler_api.php?api_key={_token}&action=setStatus&status=6&id={id}");
+            await Task.Run(() => _webDriver.Navigate().GoToUrl($"https://api.sms-activate.ae/stubs/handler_api.php?api_key={_token}&action=setStatus&status=6&id={id}"));
         }
 
-        public async Task SetSmsBad(long id)
+        public async Task SetSmsBad(string id)
         {
-            await _webDriver.Navigate().GoToUrlAsync($"https://api.sms-activate.ae/stubs/handler_api.php?api_key={_token}&action=setStatus&status=8&id={id}");
+            await Task.Run(() => _webDriver.Navigate().GoToUrl($"https://api.sms-activate.ae/stubs/handler_api.php?api_key={_token}&action=setStatus&status=8&id={id}"));
         }
 
         public async Task<string> WaitForSms(SmsActivateDto smsActivateDto, uint timeoutSeconds = 120)

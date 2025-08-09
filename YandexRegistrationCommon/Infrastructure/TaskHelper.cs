@@ -1,6 +1,10 @@
 ﻿using Newtonsoft.Json;
+using SeleniumProxyAuth;
 using System.Collections.ObjectModel;
+using System.Windows.Threading;
+using YandexRegistrationCommon.Infrastructure.APIHelper;
 using YandexRegistrationModel;
+using YandexRegistrationModel.Enums;
 
 namespace YandexRegistrationCommon.Infrastructure
 {
@@ -12,15 +16,16 @@ namespace YandexRegistrationCommon.Infrastructure
         public static int ProcessorThreadsAvailable = 1;
 #endif
 
-        public static Task RunTasks(ObservableCollection<YandexTask> tasks, uint threadCount, CancellationToken cancellationToken)
+        public static Task RunTasks(ObservableCollection<YandexTask> tasks, uint threadCount, Dispatcher dispatcher, CancellationToken cancellationToken)
         {
+            var proxyServer = new SeleniumProxyServer();
             return Task.Run(() =>
             {
                 Parallel.ForEach(tasks, new ParallelOptions() { MaxDegreeOfParallelism = (int)threadCount, CancellationToken = cancellationToken }, async (task) =>
                 {
                     using (var seleniumHelper = new SeleniumHelper(task))
                     {
-                        await seleniumHelper.Run(cancellationToken);
+                        await seleniumHelper.Run(dispatcher, proxyServer, cancellationToken);
                     }
                 });
             }, cancellationToken);

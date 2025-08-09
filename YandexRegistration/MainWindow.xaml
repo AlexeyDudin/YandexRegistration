@@ -11,8 +11,8 @@
     xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:vm="clr-namespace:YandexRegistrationViewModel;assembly=YandexRegistrationViewModel"
     Title="Yandex регистратор"
-    Width="1024"
-    Height="768"
+    Width="640"
+    Height="540"
     d:DataContext="{d:DesignInstance vm:MainViewModel}"
     Closing="MetroWindow_Closing"
     mc:Ignorable="d">
@@ -41,7 +41,10 @@
         </Menu>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition
+                    Width="3*"
+                    MinWidth="250"
+                    MaxWidth="450" />
                 <ColumnDefinition Width="3" />
                 <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
@@ -50,24 +53,45 @@
                     <RowDefinition />
                     <RowDefinition Height="50" />
                 </Grid.RowDefinitions>
-                <customControls:MultiSelectTreeView
+                <TreeView
                     x:Name="TreeViewTasks"
                     ItemsSource="{Binding SortedTasks}"
                     SelectedItemChanged="TreeViewTasks_SelectedItemChanged">
-                    <customControls:MultiSelectTreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding}">
-                            <TextBlock FontWeight="Bold" Text="{Binding Key, Converter={StaticResource NullToTextConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Date}" Value="{x:Null}">
+                                    <Setter Property="TreeViewItem.IsExpanded" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Status}" Value="{x:Static enums:YandexTaskStatus.Error}">
+                                    <Setter Property="Background" Value="Red" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Status}" Value="{x:Static enums:YandexTaskStatus.Started}">
+                                    <Setter Property="Background" Value="LightBlue" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Status}" Value="{x:Static enums:YandexTaskStatus.Ok}">
+                                    <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Tasks}">
+                            <TextBlock FontWeight="Bold" Text="{Binding Date, Converter={StaticResource NullToTextConverter}, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" />
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <DataTemplate>
                                     <!--  Шаблон для дочерних элементов (задач)  -->
-                                    <Grid Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}">
-                                        <TextBlock Margin="5" Text="{Binding StringId}" />
-                                    </Grid>
+                                    <TextBlock
+                                        Margin="5"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        Background="{Binding Status, Converter={StaticResource StatusToBrushConverter}}"
+                                        Text="{Binding StringId}" />
                                 </DataTemplate>
                             </HierarchicalDataTemplate.ItemTemplate>
                         </HierarchicalDataTemplate>
-                    </customControls:MultiSelectTreeView.ItemTemplate>
-                </customControls:MultiSelectTreeView>
+                    </TreeView.ItemTemplate>
+                </TreeView>
                 <!--<DataGrid
                     x:Name="DataGridTasks"
                     AutoGenerateColumns="False"
@@ -161,13 +185,86 @@
             <GridSplitter Grid.Column="1" />
             <Grid Grid.Column="2" Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibleConverter}}">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="90" />
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
                     <RowDefinition />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal">
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <metro:ToggleSwitch
+                        Margin="5,0"
+                        Header="Использовать Proxy"
+                        IsOn="{Binding Path=SelectedTask.UseProxy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        OffContent="Нет"
+                        OnContent="Да" />
+                    <Grid Grid.Column="1" Visibility="{Binding Path=SelectedTask.UseProxy, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Margin="3,2"
+                                VerticalContentAlignment="Center"
+                                metro:TextBoxHelper.AutoWatermark="True"
+                                metro:TextBoxHelper.UseFloatingWatermark="True"
+                                metro:TextBoxHelper.Watermark="IP-сервера"
+                                Text="{Binding SelectedTask.Proxy.Url}" />
+                            <metro:NumericUpDown
+                                Grid.Column="1"
+                                Margin="3,2"
+                                VerticalContentAlignment="Center"
+                                metro:TextBoxHelper.AutoWatermark="True"
+                                metro:TextBoxHelper.UseFloatingWatermark="True"
+                                metro:TextBoxHelper.Watermark="Порт сервера"
+                                Maximum="65535"
+                                Minimum="0"
+                                Value="{Binding SelectedTask.Proxy.Port}" />
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Margin="3,2"
+                                VerticalContentAlignment="Center"
+                                metro:TextBoxHelper.AutoWatermark="True"
+                                metro:TextBoxHelper.UseFloatingWatermark="True"
+                                metro:TextBoxHelper.Watermark="Логин Proxy"
+                                Text="{Binding SelectedTask.Proxy.Login}" />
+                            <TextBox
+                                Grid.Column="1"
+                                Margin="3,2"
+                                VerticalContentAlignment="Center"
+                                metro:TextBoxHelper.AutoWatermark="True"
+                                metro:TextBoxHelper.UseFloatingWatermark="True"
+                                metro:TextBoxHelper.Watermark="Пароль Proxy"
+                                Text="{Binding SelectedTask.Proxy.Password}" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <TextBox
+                    Grid.Row="1"
+                    Margin="5"
+                    VerticalContentAlignment="Center"
+                    metro:TextBoxHelper.AutoWatermark="True"
+                    metro:TextBoxHelper.UseFloatingWatermark="True"
+                    metro:TextBoxHelper.Watermark="UserAgent"
+                    Text="{Binding SelectedTask.UserAgent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <TextBlock
                         Margin="5"
                         VerticalAlignment="Center"
@@ -181,7 +278,7 @@
                         Content="Yandex browser"
                         IsChecked="{Binding Path=SelectedTask.IsYandexBrowser, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
                 </StackPanel>
-                <Grid Grid.Row="1">
+                <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition />
@@ -204,15 +301,44 @@
                         Text="{Binding SelectedTask.SecondNameForRegistration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
                 <TextBox
-                    Grid.Row="2"
+                    Grid.Row="4"
                     Margin="5"
                     VerticalContentAlignment="Center"
                     metro:TextBoxHelper.AutoWatermark="True"
                     metro:TextBoxHelper.UseFloatingWatermark="True"
                     metro:TextBoxHelper.Watermark="Реферальная ссылка"
                     Text="{Binding SelectedTask.ReferalUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Grid Grid.Row="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <metro:ToggleSwitch
+                        Margin="5,0"
+                        Header="Сервис СМС"
+                        IsOn="{Binding IsManualSmsService, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        OffContent="Автоматический"
+                        OnContent="Ручной" />
+                    <TextBox
+                        Grid.Column="1"
+                        Margin="5"
+                        VerticalContentAlignment="Center"
+                        metro:TextBoxHelper.AutoWatermark="True"
+                        metro:TextBoxHelper.UseFloatingWatermark="True"
+                        metro:TextBoxHelper.Watermark="Ссылка на сервис"
+                        Text="{Binding Path=SmsServiceUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox
+                        Grid.Column="1"
+                        Margin="5"
+                        VerticalContentAlignment="Center"
+                        metro:TextBoxHelper.AutoWatermark="True"
+                        metro:TextBoxHelper.UseFloatingWatermark="True"
+                        metro:TextBoxHelper.Watermark="Номер телефона (без символа + и пробелов)"
+                        Text="{Binding Path=ManualPhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Visibility="{Binding IsManualSmsService, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
                 <DataGrid
-                    Grid.Row="3"
+                    Grid.Row="6"
                     AutoGenerateColumns="False"
                     CanUserAddRows="True"
                     ItemsSource="{Binding Path=SelectedTask.Queries, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
@@ -224,7 +350,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
                 <TextBlock
-                    Grid.Row="4"
+                    Grid.Row="7"
                     Text="{Binding SelectedTask.ErrorMessage, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                     TextWrapping="WrapWithOverflow" />
             </Grid>
@@ -243,6 +369,7 @@
                 metro:TextBoxHelper.UseFloatingWatermark="True"
                 metro:TextBoxHelper.Watermark="Количество одновременных процессов"
                 metro:TextBoxHelper.WatermarkAlignment="Left"
+                Maximum="{Binding MaxCountThreads}"
                 Minimum="1"
                 TextAlignment="Left"
                 Value="{Binding CountThreads}" />
@@ -252,7 +379,8 @@
                 Grid.Column="1"
                 Margin="5"
                 Click="StartButton_Click"
-                Content="Запуск" />
+                Content="Запуск"
+                IsEnabled="{Binding IsTaskNotStarted, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
     </Grid>
 </metro:MetroWindow>

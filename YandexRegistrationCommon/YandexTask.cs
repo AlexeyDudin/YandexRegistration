@@ -3,15 +3,16 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using YandexRegistrationModel.Enums;
 using Newtonsoft.Json;
+using YandexRegistrationCommon;
 
 namespace YandexRegistrationModel
 {
     public class YandexTask : INotifyPropertyChanged
     {
         private uint _id;
-        private BrowserType _browserType;
+        private BrowserType _browserType = BrowserType.Chrome;
         private ObservableCollection<Query> _queries = new ObservableCollection<Query>();
-        private bool _useProxy = true;
+        private ProxyParam _proxy = new ProxyParam();
         private YandexTaskStatus _status = YandexTaskStatus.NotStarted;
         private string _errorMessage = string.Empty;
         private string _userNameForRegistration = string.Empty;
@@ -19,13 +20,14 @@ namespace YandexRegistrationModel
         private string _referalUrl = string.Empty;
         private bool _isReferalUrlUserChanged = false;
         private User _registeredUser = null;
+        private string _userAgent = "Mozilla/5.0 (Linux; Android 14; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36";
+        private ISmsActivator _smsService;
 
         public YandexTask(uint id)
         {
             _id = id;
             UserNameForRegistration = NameHelper.GetRandomName();
             SecondNameForRegistration = NameHelper.GetRandomSecondName();
-            BrowserType = BrowserType.Chrome;
         }
 
         public BrowserType BrowserType
@@ -63,10 +65,13 @@ namespace YandexRegistrationModel
 
         public bool UseProxy
         {
-            get => _useProxy;
+            get => !(Proxy is null);
             set
             {
-                _useProxy = value;
+                if (value)
+                    Proxy = new ProxyParam();
+                else
+                    Proxy = null;
                 OnPropertyChanged();
             }
         }
@@ -102,7 +107,7 @@ namespace YandexRegistrationModel
         [JsonIgnore]
         public string StringId => $"Задание {_id}";
 
-        public YandexTaskStatus Status 
+        public YandexTaskStatus Status
         {
             get => _status;
             set
@@ -112,13 +117,15 @@ namespace YandexRegistrationModel
             }
         }
 
-        public User RegisteredUser 
-        { 
+        public User RegisteredUser
+        {
             get => _registeredUser;
             set
             {
                 _registeredUser = value;
                 OnPropertyChanged();
+                if (NotifyChangeAction != null)
+                    NotifyChangeAction(Id);
             }
         }
 
@@ -136,8 +143,8 @@ namespace YandexRegistrationModel
         }
 
         [JsonIgnore]
-        public string UserNameForRegistration 
-        { 
+        public string UserNameForRegistration
+        {
             get => _userNameForRegistration;
             set
             {
@@ -147,7 +154,7 @@ namespace YandexRegistrationModel
         }
 
         [JsonIgnore]
-        public string SecondNameForRegistration 
+        public string SecondNameForRegistration
         {
             get => _secondNameForRegistration;
             set
@@ -157,13 +164,34 @@ namespace YandexRegistrationModel
             }
         }
 
-        public string ReferalUrl 
+        public string ReferalUrl
         {
             get => _referalUrl;
             set
             {
                 _referalUrl = value;
                 _isReferalUrlUserChanged = true;
+                OnPropertyChanged();
+            }
+        }
+
+        [JsonConverter(typeof(YandexTaskConverter))]
+        public ISmsActivator SmsService
+        {
+            get => _smsService;
+            set
+            {
+                _smsService = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ProxyParam Proxy
+        {
+            get => _proxy;
+            set
+            {
+                _proxy = value;
                 OnPropertyChanged();
             }
         }
@@ -176,8 +204,23 @@ namespace YandexRegistrationModel
                 Queries = new ObservableCollection<Query>(Queries.Select(q => new Query() { Value = q.Value }).ToList()),
                 UseProxy = this.UseProxy,
                 UserNameForRegistration = NameHelper.GetRandomName(),
-                SecondNameForRegistration = NameHelper.GetRandomSecondName()
+                SecondNameForRegistration = NameHelper.GetRandomSecondName(),
+                _referalUrl = this.ReferalUrl,
+                SmsService = this.SmsService,
+                Proxy = this.Proxy == null ? null : this.Proxy.Clone(),
+                NotifyChangeAction = this.NotifyChangeAction,
             };
+        }
+
+        public Action<uint> NotifyChangeAction { get; set; }
+        public string UserAgent
+        {
+            get => _userAgent;
+            set
+            {
+                _userAgent = value;
+                OnPropertyChanged();
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged = delegate { };

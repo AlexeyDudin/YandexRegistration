@@ -1,7 +1,11 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using SeleniumProxyAuth;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
+using Titanium.Web.Proxy;
 using YandexRegistrationCommon.Infrastructure.APIHelper;
 using YandexRegistrationCommon.Infrastructure.Factories;
 using YandexRegistrationModel;
@@ -12,7 +16,6 @@ namespace YandexRegistrationCommon.Infrastructure
     public class SeleniumHelper : IDisposable
     {
         private readonly YandexTask _task;
-        private readonly SmsActivateHelper _smsActivateHelper = new SmsActivateHelper();
         private readonly RuCaptchaHelper _ruCaptchaHelper = new RuCaptchaHelper();
         private readonly Regex _yandexCodeRegEx = new Regex("[0-9]{3}-?[0-9]{3}");
         private const uint _countSmsRetryes = 3;
@@ -22,7 +25,7 @@ namespace YandexRegistrationCommon.Infrastructure
             _task = task;
         }
 
-        public async Task Run(CancellationToken cancellationToken)
+        public async Task Run(Dispatcher dispathcer, SeleniumProxyServer proxyServer, CancellationToken cancellationToken)
         {
             IWebDriver webDriver = null;
             try
@@ -30,7 +33,7 @@ namespace YandexRegistrationCommon.Infrastructure
                 _task.Status = YandexTaskStatus.Started;
                 _task.ErrorMessage = string.Empty;
 
-                webDriver = SeleniumDriverFactory.CreateDriver(_task);
+                webDriver = SeleniumDriverFactory.CreateDriver(_task, proxyServer);
 
                 // Настраиваем ожидание (таймаут 10 секунд)
                 WebDriverWait wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
@@ -53,13 +56,22 @@ namespace YandexRegistrationCommon.Infrastructure
                             webDriver.Navigate().GoToUrl(url);
                         }
 
-                        // Ждем пока элемент с определенным селектором появится и станет кликабельным
-                        element = webDriver.FindElement(By.XPath("//a[.//span[contains(text(),'Получить бонус')]]"));
-                        element.Click();
+                        try
+                        {
+                            // Ждем пока элемент с определенным селектором появится и станет кликабельным
+                            element = webDriver.FindElement(By.XPath("//a[.//span[contains(text(),'Получить бонус')]]"));
+                            element.Click();
+                        }
+                        catch (Exception ex)
+                        {
+                            var result = MessageBox.Show("Не удалось найти кнопку 'Получить бонус'. Кнопка не отобразилась в браузере.\nСделайте так, чтобы отобразилась кнопка \"Получить бонус\" и нажмите её вручную!\nДля продолжения нажмите кнопку OK. Для прерывания задания нажмите кнопку Cancel", "Ошибка", MessageBoxButton.OKCancel, MessageBoxImage.Error, MessageBoxResult.Cancel);
+                            if (result == MessageBoxResult.Cancel)
+                                throw new ArgumentException("Задание прервано пользователем");
+                        }
 
-                        webDriver.SwitchTo().Window(webDriver.WindowHandles[1]);
+                        webDriver.SwitchTo().Window(webDriver.WindowHandles.Last());
                     }
-                    var smsModelDto = await _smsActivateHelper.GetNewPhoneNumber();
+                    var smsModelDto = await _task.SmsService.GetNewPhoneNumber();
 
                     //Send phone number
                     element = webDriver.FindElement(By.XPath("//input"));
@@ -70,17 +82,21 @@ namespace YandexRegistrationCommon.Infrastructure
                     element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("phone-auth-section__submit-button")));
                     element.Click();
 
-                    if (_task.IsChromeBrowser)
+                    try
                     {
+                        //Иногда кнопка "Далее" бывает, иногда нет
                         //Click next button
                         element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//button[.//span[contains(text(), 'Далее')]]")));
                         element.Click();
+                    }
+                    catch (Exception ex)
+                    { 
                     }
 
                     bool isSmsIncome = false;
                     for (int i = 1; i < _countSmsRetryes; i++)
                     {
-                        var sms = await _smsActivateHelper.WaitForSms(smsModelDto);
+                        var sms = await _task.SmsService.WaitForSms(smsModelDto);
                         if (!string.IsNullOrEmpty(sms))
                         {
                             var code = _yandexCodeRegEx.Match(sms);
@@ -99,10 +115,10 @@ namespace YandexRegistrationCommon.Infrastructure
                     }
                     if (!isSmsIncome)
                     {
-                        await _smsActivateHelper.SetSmsBad(smsModelDto.Id);
+                        await _task.SmsService.SetSmsBad(smsModelDto.Id);
                         throw new NotFoundException($"СМС с кодом не пришла за {_countSmsRetryes} попытки(-ок)");
                     }
-                    await _smsActivateHelper.SetSmsOk(smsModelDto.Id);
+                    await _task.SmsService.SetSmsOk(smsModelDto.Id);
 
                     wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.Id("passp-field-firstname"))).SendKeys(_task.UserNameForRegistration);
                     wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.Id("passp-field-lastname"))).SendKeys(_task.SecondNameForRegistration);
@@ -129,21 +145,31 @@ namespace YandexRegistrationCommon.Infrastructure
                     {
                         FirstName = _task.UserNameForRegistration,
                         LastName = _task.SecondNameForRegistration,
-                        Phone = smsModelDto.Phone.ToString(),
+                        Phone = smsModelDto?.Phone?.ToString(),
                         RegistrationDate = DateTime.Now
                     };
                 }
 
+                webDriver.SwitchTo().Window(webDriver.WindowHandles.Last());
                 foreach (var request in _task.Queries)
                 {
                     IWebElement element;
                     try
                     {
                         element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("search3__input-inner-container")));
+                        element = element.FindElement(By.TagName("input"));
                     }
                     catch (Exception ex)
                     {
-                        element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("HeaderForm-InputContainer")));
+                        try
+                        {
+                            element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("HeaderForm-InputContainer")));
+                            element = element.FindElement(By.TagName("input"));
+                        }
+                        catch (Exception exc)
+                        {
+                            element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//div[.input]")));
+                        }
                     }
                     element.Clear();
                     element.SendKeys(request.Value);
@@ -172,9 +198,20 @@ namespace YandexRegistrationCommon.Infrastructure
 
         private async Task SolveCapthcha(WebDriverWait wait, IWebDriver webDriver)
         {
-            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("CheckboxCaptcha-Inner"))).Click();
+            string currentUrl = webDriver.Url;
 
-            if (IsCaptchaView(webDriver))
+            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("CheckboxCaptcha-Inner"))).Click();
+            bool isCaptureSolve = false;
+            try
+            {
+                wait.Until(d => d.Url != currentUrl);
+                isCaptureSolve = true;
+            }
+            catch (Exception ex)
+            {
+                isCaptureSolve = false;
+            }
+            if (!isCaptureSolve)
             {
                 await _ruCaptchaHelper.SolveCapcha(wait, webDriver);
             }
@@ -198,9 +235,10 @@ namespace YandexRegistrationCommon.Infrastructure
         public void Dispose()
         {
             var tempDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "Selenium", $"{_task.Id}"));
-            tempDirectory.Delete(true);
+            if(tempDirectory.Exists)
+                tempDirectory.Delete(true);
 
-            _smsActivateHelper.Dispose();
+            _task.SmsService.Dispose();
         }
     }
 }

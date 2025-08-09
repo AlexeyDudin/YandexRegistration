@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\YandexRegistrationCommon\YandexRegistrationCommon.csproj" />
     <ProjectReference Include="..\YandexRegistrationModel\YandexRegistrationModel.csproj" />
     <ProjectReference Include="..\YandexRegistrationViewModel\YandexRegistrationViewModel.csproj" />
   </ItemGroup>

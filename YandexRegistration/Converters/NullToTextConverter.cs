@@ -9,6 +9,8 @@ namespace YandexRegistration.Converters
         {
             if (value is null)
                 return "Не зарегистрированные пользователи";
+            if (value is DateTime dt)
+                return dt.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
             return value;
         }
 
