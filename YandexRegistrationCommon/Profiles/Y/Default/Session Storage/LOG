@@ -1,0 +1,7 @@
+2025/08/12-17:20:00.033 1518 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Session Storage is locked for recovering successfully
+2025/08/12-17:20:00.036 1518 Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Session Storage/MANIFEST-000001
+2025/08/12-17:20:00.036 1518 Recovering log #3
+2025/08/12-17:20:00.039 1518 Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Session Storage/000003.log 
+2025/08/12-17:20:11.672 14cc Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Session Storage, waiting for background work finished
+2025/08/12-17:20:11.672 14cc Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Session Storage, background work finished
+2025/08/12-17:20:11.673 14cc File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Session Storage unlocked successfully

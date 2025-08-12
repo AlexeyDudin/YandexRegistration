@@ -35,6 +35,7 @@ namespace YandexRegistationAddon
                 }
                 TimeSpend--;
             };
+            OnPropertyChanged(nameof(PhoneNumber));
         }
 
         public string PhoneNumber => _phoneNumber;

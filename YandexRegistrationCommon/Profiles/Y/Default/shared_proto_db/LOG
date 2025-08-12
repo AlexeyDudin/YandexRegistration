@@ -1,0 +1,7 @@
+2025/08/12-17:19:59.922 296c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db is locked for recovering successfully
+2025/08/12-17:19:59.922 296c Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db/MANIFEST-000001
+2025/08/12-17:19:59.922 296c Recovering log #3
+2025/08/12-17:19:59.923 296c Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db/000003.log 
+2025/08/12-17:20:11.770 6134 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db, waiting for background work finished
+2025/08/12-17:20:11.770 6134 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db, background work finished
+2025/08/12-17:20:11.771 6134 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db unlocked successfully

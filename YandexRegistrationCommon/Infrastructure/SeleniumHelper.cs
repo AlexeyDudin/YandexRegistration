@@ -1,13 +1,16 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumProxyAuth;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using System.Xml.Xsl;
 using Titanium.Web.Proxy;
 using YandexRegistrationCommon.Infrastructure.APIHelper;
 using YandexRegistrationCommon.Infrastructure.Factories;
+using YandexRegistrationCommon.Infrastructure.SeleniumAddons;
 using YandexRegistrationModel;
 using YandexRegistrationModel.Enums;
 
@@ -19,6 +22,8 @@ namespace YandexRegistrationCommon.Infrastructure
         private readonly RuCaptchaHelper _ruCaptchaHelper = new RuCaptchaHelper();
         private readonly Regex _yandexCodeRegEx = new Regex("[0-9]{3}-?[0-9]{3}");
         private const uint _countSmsRetryes = 3;
+        private WebDriverWait _wait;
+        private IWebDriver webDriver = null;
 
         public SeleniumHelper(YandexTask task)
         {
@@ -27,7 +32,6 @@ namespace YandexRegistrationCommon.Infrastructure
 
         public async Task Run(Dispatcher dispathcer, SeleniumProxyServer proxyServer, CancellationToken cancellationToken)
         {
-            IWebDriver webDriver = null;
             try
             {
                 _task.Status = YandexTaskStatus.Started;
@@ -36,7 +40,7 @@ namespace YandexRegistrationCommon.Infrastructure
                 webDriver = SeleniumDriverFactory.CreateDriver(_task, proxyServer);
 
                 // Настраиваем ожидание (таймаут 10 секунд)
-                WebDriverWait wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
+                _wait = new WebDriverWait(webDriver, TimeSpan.FromSeconds(10));
 
                 GotoUrl(webDriver);
 
@@ -45,21 +49,36 @@ namespace YandexRegistrationCommon.Infrastructure
                     IWebElement element;
                     if (_task.IsChromeBrowser)
                     {
+                        IWebElement button = null;
+                        if ((button = ContainsElement(By.XPath("//button[.//span[contains(text(),'Далее')]]"), false)) != null)
+                        {
+                            button.Click();
+
+                            Thread.Sleep(TimeSpan.FromSeconds(10));
+
+                            if ((button = ContainsElement(By.XPath("//span[text()='Далее']"), false)) != null)
+                            {
+                                button.Click();
+                            }
+                        }
+
                         string query = "Яндекс";
                         string encodedQuery = Uri.EscapeDataString(query);
                         string url = $"https://yandex.ru/search/?text={encodedQuery}";
                         webDriver.Navigate().GoToUrl(url);
+                        webDriver.SwitchTo().Window(webDriver.WindowHandles.Last());
 
                         if (IsCaptchaView(webDriver))
                         {
-                            await SolveCapthcha(wait, webDriver);
+                            await SolveCapthcha(_wait, webDriver);
                             webDriver.Navigate().GoToUrl(url);
+                            webDriver.SwitchTo().Window(webDriver.WindowHandles.Last());
                         }
 
                         try
                         {
                             // Ждем пока элемент с определенным селектором появится и станет кликабельным
-                            element = webDriver.FindElement(By.XPath("//a[.//span[contains(text(),'Получить бонус')]]"));
+                            element = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//a[.//span[contains(text(),'Получить бонус')]]")));
                             element.Click();
                         }
                         catch (Exception ex)
@@ -71,75 +90,93 @@ namespace YandexRegistrationCommon.Infrastructure
 
                         webDriver.SwitchTo().Window(webDriver.WindowHandles.Last());
                     }
-                    var smsModelDto = await _task.SmsService.GetNewPhoneNumber();
-
-                    //Send phone number
-                    element = webDriver.FindElement(By.XPath("//input"));
-                    //element.Click();
-                    element.SendKeys(smsModelDto.Phone.ToString());
-
-                    //Click next button
-                    element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("phone-auth-section__submit-button")));
-                    element.Click();
-
-                    try
+                    bool badRegistrationResult;
+                    SmsActivateDto smsModelDto; 
+                    do
                     {
-                        //Иногда кнопка "Далее" бывает, иногда нет
+                        smsModelDto = await _task.SmsService.GetNewPhoneNumber();
+
+                        //Send phone number
+                        element = webDriver.FindElement(By.XPath("//input"));
+                        //element.Click();
+                        element.SendKeys(smsModelDto.Phone.ToString());
+
                         //Click next button
-                        element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//button[.//span[contains(text(), 'Далее')]]")));
+                        element = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("phone-auth-section__submit-button")));
                         element.Click();
-                    }
-                    catch (Exception ex)
-                    { 
-                    }
 
-                    bool isSmsIncome = false;
-                    for (int i = 1; i < _countSmsRetryes; i++)
-                    {
-                        var sms = await _task.SmsService.WaitForSms(smsModelDto);
-                        if (!string.IsNullOrEmpty(sms))
+                        if ((element = ContainsElement(By.XPath("//div[.//h1[text()='Введите фразу с картинки']]"), false)) != null)
                         {
-                            var code = _yandexCodeRegEx.Match(sms);
-
-                            element = webDriver.FindElement(By.CssSelector("input[data-t='field:input-phoneCode']"));
-
-                            // Вставляем нужный код
-                            element.SendKeys(sms);
-
-                            isSmsIncome = true;
-                            break;
+                            SolvePhoneCaptcha(_wait, webDriver);
                         }
 
-                        element = webDriver.FindElement(By.CssSelector("button[data-t='button:default:retry-to-request-code']"));
-                        element.Click();
+                        //Иногда кнопка "Далее" бывает, иногда нет
+                        if ((element = ContainsElement(By.XPath("//button[.//span[contains(text(), 'Далее')]]"), false)) != null)
+                            element.Click();
+
+                        bool isSmsIncome = false;
+                        for (int i = 1; i < _countSmsRetryes; i++)
+                        {
+                            var sms = await _task.SmsService.WaitForSms(smsModelDto);
+                            if (!string.IsNullOrEmpty(sms))
+                            {
+                                var code = _yandexCodeRegEx.Match(sms);
+
+                                element = webDriver.FindElement(By.CssSelector("input[data-t='field:input-phoneCode']"));
+
+                                // Вставляем нужный код
+                                element.SendKeys(sms);
+
+                                isSmsIncome = true;
+                                break;
+                            }
+
+                            element = webDriver.FindElement(By.CssSelector("button[data-t='button:default:retry-to-request-code']"));
+                            element.Click();
+                        }
+                        if (!isSmsIncome)
+                        {
+                            await _task.SmsService.SetSmsBad(smsModelDto.Id);
+                            throw new NotFoundException($"СМС с кодом не пришла за {_countSmsRetryes} попытки(-ок)");
+                        }
+                        badRegistrationResult = webDriver.PageSource.Contains("Нашли один с этим телефоном");
+                        if (badRegistrationResult)
+                        {
+                            _task.SmsService.SetSmsBad(smsModelDto.Id);
+                            ContainsElement(By.XPath("//button[text()='Войти другим способом']")).Click();
+                        }
                     }
-                    if (!isSmsIncome)
-                    {
-                        await _task.SmsService.SetSmsBad(smsModelDto.Id);
-                        throw new NotFoundException($"СМС с кодом не пришла за {_countSmsRetryes} попытки(-ок)");
-                    }
+                    while (badRegistrationResult);
                     await _task.SmsService.SetSmsOk(smsModelDto.Id);
 
-                    wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.Id("passp-field-firstname"))).SendKeys(_task.UserNameForRegistration);
-                    wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.Id("passp-field-lastname"))).SendKeys(_task.SecondNameForRegistration);
 
-                    element = webDriver.FindElement(By.CssSelector("button[data-t='button:action']"));
-                    element.Click();
+                    if ((element = ContainsElement(By.Id("passp-field-firstname"), false)) != null)
+                        element.SendKeys(_task.UserNameForRegistration);
+                    if ((element = ContainsElement(By.Id("passp-field-lastname"), false)) != null)
+                        element.SendKeys(_task.SecondNameForRegistration);
 
-                    element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("PermissionCheckbox")));
-                    element.Click();
+                    if ((element = ContainsElement(By.XPath("//button[.//span[text()='Далее']]"), false)) != null)
+                        element.Click();
 
-                    element = webDriver.FindElement(By.CssSelector("button[data-t='button:action']"));
-                    element.Click();
+                    if ((element = ContainsElement(By.XPath("//button[.//span[text()='Создать аккаунт']]"), false)) != null)
+                        element.Click();
 
-                    element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("RegSurveyPage-button")));
-                    element.Click();
+                    if ((element = ContainsElement(By.ClassName("PermissionCheckbox"))) != null)
+                        element.Click();
 
-                    element = webDriver.FindElement(By.XPath("//button[text()='Подтвердить участие']"));
-                    element.Click();
+                    if ((element = ContainsElement(By.XPath("//button[.//span[contains(text(), 'Далее')]]"))) != null)
+                        element.Click();
 
-                    element = webDriver.FindElement(By.XPath("//a[text()='На главную']"));
-                    element.Click();
+                    if ((element = ContainsElement(By.ClassName("RegSurveyPage-button"))) != null)
+                        element.Click();
+
+                    if ((element = webDriver.FindElement(By.XPath("//button[text()='Подтвердить участие']"))) != null)
+                        element.Click();
+
+                    if ((element = ContainsElement(By.XPath("//a[text()='На главную']"), false)) != null)
+                        element.Click();
+
+                    CloseQeustionTab(webDriver);
 
                     _task.RegisteredUser = new User()
                     {
@@ -151,29 +188,35 @@ namespace YandexRegistrationCommon.Infrastructure
                 }
 
                 webDriver.SwitchTo().Window(webDriver.WindowHandles.Last());
+                await Task.Delay(TimeSpan.FromSeconds(10));
                 foreach (var request in _task.Queries)
                 {
                     IWebElement element;
-                    try
+                    if ((element = ContainsElement(By.ClassName("search3__input-inner-container"), false, false)) == null)
                     {
-                        element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("search3__input-inner-container")));
-                        element = element.FindElement(By.TagName("input"));
-                    }
-                    catch (Exception ex)
-                    {
-                        try
+                        if ((element = ContainsElement(By.ClassName("HeaderForm-InputContainer"), false, false)) == null)
                         {
-                            element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.ClassName("HeaderForm-InputContainer")));
+                            if ((element = ContainsElement(By.XPath("//div[.input]"), false, false)) == null)
+                            {
+                                element = ContainsElement(By.ClassName("mini-suggest__label"), useWait: false);
+                                element.Click();
+                                element = ContainsElement(By.ClassName("mini-suggest__row"));
+                                element = element.FindElement(By.TagName("input"));
+                            }
+                        }
+                        else
+                        {
                             element = element.FindElement(By.TagName("input"));
                         }
-                        catch (Exception exc)
-                        {
-                            element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//div[.input]")));
-                        }
+                    }
+                    else
+                    {
+                        element = element.FindElement(By.TagName("input"));
                     }
                     element.Clear();
                     element.SendKeys(request.Value);
                     element.SendKeys(Keys.Enter);
+                    await Task.Delay(TimeSpan.FromSeconds(5));
                 }
 
                 _task.Status = YandexTaskStatus.Ok;
@@ -181,16 +224,63 @@ namespace YandexRegistrationCommon.Infrastructure
             catch (Exception ex)
             {
                 _task.Status = YandexTaskStatus.Error;
-                _task.ErrorMessage = ex.Message;
+                _task.ErrorMessage = CompileException(ex);
             }
             finally
             {
                 if (webDriver != null)
                 {
-                    webDriver.Close();
+                    webDriver.Quit();
                     webDriver.Dispose();
                     GC.Collect();
                 }
+                if (_task.BrowserUserProfile == null && _task.Status == YandexTaskStatus.Ok)
+                    _task.ZipProfile();
+            }
+        }
+
+        private void CloseQeustionTab(IWebDriver webDriver)
+        {
+            if (webDriver.WindowHandles.Count < 2)
+                webDriver.SwitchTo().NewWindow(WindowType.Tab);
+            foreach (var window in webDriver.WindowHandles.ToList())
+            {
+                webDriver.SwitchTo().Window(window);
+                if (webDriver.Title.Contains("опрос"))
+                    webDriver.Close();
+            }
+        }
+
+        private string CompileException(Exception ex)
+        {
+            var result = new List<string>();
+            var stackTrace = new StackTrace(ex);
+            result.Add(stackTrace.ToString());
+            var currentException = ex;
+            while (currentException != null)
+            {
+                result.Add(currentException.Message);
+                currentException = currentException.InnerException;
+            }
+            return string.Join("\n", result);
+        }
+
+        private IWebElement? ContainsElement(By searchResult, bool throwExceptionIfElementNotFound = true, bool useWait = true)
+        {
+            if (_wait == null)
+                throw new NotImplementedException("Не установлен метод ожидания поиска элементов на странице. Обратитесь к разработчику ПО");
+            try
+            {
+                if (useWait)
+                    return _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(searchResult));
+
+                return webDriver.FindElement(searchResult);
+            }
+            catch (Exception ex)
+            {
+                if (throwExceptionIfElementNotFound)
+                    throw ex;
+                return null;
             }
         }
 
@@ -217,6 +307,11 @@ namespace YandexRegistrationCommon.Infrastructure
             }
         }
 
+        private async Task SolvePhoneCaptcha(WebDriverWait wait, IWebDriver webDriver)
+        {
+            await _ruCaptchaHelper.SolvePhoneCapcha(wait, webDriver);
+        }
+
         private void GotoUrl(IWebDriver webDriver)
         {
             webDriver.Navigate().GoToUrl(_task.ReferalUrl);
@@ -235,7 +330,7 @@ namespace YandexRegistrationCommon.Infrastructure
         public void Dispose()
         {
             var tempDirectory = new DirectoryInfo(Path.Combine(Path.GetTempPath(), "Selenium", $"{_task.Id}"));
-            if(tempDirectory.Exists)
+            if (tempDirectory.Exists)
                 tempDirectory.Delete(true);
 
             _task.SmsService.Dispose();

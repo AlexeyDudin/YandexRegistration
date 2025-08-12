@@ -15,6 +15,7 @@
     Height="540"
     d:DataContext="{d:DesignInstance vm:MainViewModel}"
     Closing="MetroWindow_Closing"
+    Icon="ya_icon.ico"
     mc:Ignorable="d">
     <metro:MetroWindow.Resources>
         <converters:NullToVisibleConverter x:Key="NullToVisibleConverter" />
@@ -71,6 +72,9 @@
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding Status}" Value="{x:Static enums:YandexTaskStatus.Ok}">
                                     <Setter Property="Background" Value="LightGreen" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=HasErrors, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Value="true">
+                                    <Setter Property="Background" Value="Red" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -186,12 +190,12 @@
             <Grid Grid.Column="2" Visibility="{Binding SelectedTask, Converter={StaticResource NullToVisibleConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="90" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
                     <RowDefinition Height="50" />
-                    <RowDefinition Height="50" />
-                    <RowDefinition />
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
@@ -256,14 +260,33 @@
                         </Grid>
                     </Grid>
                 </Grid>
-                <TextBox
-                    Grid.Row="1"
-                    Margin="5"
-                    VerticalContentAlignment="Center"
-                    metro:TextBoxHelper.AutoWatermark="True"
-                    metro:TextBoxHelper.UseFloatingWatermark="True"
-                    metro:TextBoxHelper.Watermark="UserAgent"
-                    Text="{Binding SelectedTask.UserAgent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <metro:ToggleSwitch
+                        Margin="5"
+                        IsOn="{Binding Path=SelectedTask.IsMobileDevise, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        OffContent="Нет"
+                        OnContent="Да">
+                        <metro:ToggleSwitch.Header>
+                            <StackPanel>
+                                <TextBlock Text="Эмулировать" TextWrapping="Wrap" />
+                                <TextBlock Text="мобильное устройство" TextWrapping="WrapWithOverflow" />
+                            </StackPanel>
+                        </metro:ToggleSwitch.Header>
+                    </metro:ToggleSwitch>
+                    <TextBox
+                        Grid.Column="1"
+                        MaxHeight="40"
+                        Margin="5"
+                        VerticalContentAlignment="Center"
+                        metro:TextBoxHelper.AutoWatermark="True"
+                        metro:TextBoxHelper.UseFloatingWatermark="True"
+                        metro:TextBoxHelper.Watermark="UserAgent"
+                        Text="{Binding SelectedTask.UserAgent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
                 <StackPanel Grid.Row="2" Orientation="Horizontal">
                     <TextBlock
                         Margin="5"
@@ -307,7 +330,7 @@
                     metro:TextBoxHelper.AutoWatermark="True"
                     metro:TextBoxHelper.UseFloatingWatermark="True"
                     metro:TextBoxHelper.Watermark="Реферальная ссылка"
-                    Text="{Binding SelectedTask.ReferalUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    Text="{Binding SelectedTask.ReferalUrl, Mode=TwoWay, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}" />
                 <Grid Grid.Row="5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />

@@ -1,0 +1,4 @@
+2025/08/12-17:19:47.402 3cdc File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\parcel_tracking_db is locked for recovering successfully
+2025/08/12-17:19:47.403 3cdc Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\parcel_tracking_db, waiting for background work finished
+2025/08/12-17:19:47.404 3cdc Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\parcel_tracking_db, background work finished
+2025/08/12-17:19:47.404 3cdc File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\parcel_tracking_db unlocked successfully

@@ -69,6 +69,18 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
 
         public async Task SetSmsBad(string id)
         {
+            var requestUrl = string.Empty;
+            if (MainUrl.EndsWith("/"))
+                requestUrl = $"{MainUrl}api/getSmsCode/?apiKey={_token}&idNum={id}&status=bad";
+            else
+                requestUrl = $"{MainUrl}/api/getSmsCode/?apiKey={_token}&idNum={id}&status=bad";
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUrl)
+            {
+                Version = HttpVersion.Version11 // указываем HTTP/1.1
+            };
+
+            var response = await _client.SendAsync(request);
+            var body = await response.Content.ReadAsStringAsync();
         }
 
         public async Task SetSmsOk(string id)
@@ -97,7 +109,7 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
                 var parsedResponse = JsonConvert.DeserializeObject<SmsCodeResponse>(body);
                 if (parsedResponse.smsCode != null)
                 {
-                    return parsedResponse.smsCode.Last();
+                    return parsedResponse.smsCode?.Last();
                 }
                 await Task.Delay(1000);
             }

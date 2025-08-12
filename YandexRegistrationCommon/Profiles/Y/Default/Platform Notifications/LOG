@@ -1,0 +1,7 @@
+2025/08/12-17:19:59.911 12d4 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Platform Notifications is locked for recovering successfully
+2025/08/12-17:19:59.912 12d4 Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Platform Notifications/MANIFEST-000001
+2025/08/12-17:19:59.912 12d4 Recovering log #3
+2025/08/12-17:19:59.913 12d4 Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Platform Notifications/000003.log 
+2025/08/12-17:20:11.670 f64 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Platform Notifications, waiting for background work finished
+2025/08/12-17:20:11.670 f64 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Platform Notifications, background work finished
+2025/08/12-17:20:11.673 f64 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Platform Notifications unlocked successfully

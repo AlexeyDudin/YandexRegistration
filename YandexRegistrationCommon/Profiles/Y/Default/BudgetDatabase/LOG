@@ -1,0 +1,4 @@
+2025/08/12-17:20:07.459 6ad8 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\BudgetDatabase is locked for recovering successfully
+2025/08/12-17:20:07.460 6ad8 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\BudgetDatabase, waiting for background work finished
+2025/08/12-17:20:07.460 6ad8 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\BudgetDatabase, background work finished
+2025/08/12-17:20:07.460 6ad8 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\BudgetDatabase unlocked successfully

@@ -1,0 +1,7 @@
+2025/08/12-17:19:59.862 12d4 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Service Worker\Database is locked for recovering successfully
+2025/08/12-17:19:59.863 12d4 Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Service Worker\Database/MANIFEST-000001
+2025/08/12-17:19:59.864 12d4 Recovering log #3
+2025/08/12-17:19:59.864 12d4 Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Service Worker\Database/000003.log 
+2025/08/12-17:20:11.657 3930 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Service Worker\Database, waiting for background work finished
+2025/08/12-17:20:11.658 3930 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Service Worker\Database, background work finished
+2025/08/12-17:20:11.659 3930 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Service Worker\Database unlocked successfully

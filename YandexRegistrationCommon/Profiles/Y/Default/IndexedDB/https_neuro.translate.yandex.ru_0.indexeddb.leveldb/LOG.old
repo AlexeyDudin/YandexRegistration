@@ -1,0 +1,4 @@
+2025/08/09-23:50:15.778 4204 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\IndexedDB\https_neuro.translate.yandex.ru_0.indexeddb.leveldb is locked for recovering successfully
+2025/08/09-23:50:15.787 4204 Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\IndexedDB\https_neuro.translate.yandex.ru_0.indexeddb.leveldb/MANIFEST-000001
+2025/08/09-23:50:15.796 4204 Recovering log #3
+2025/08/09-23:50:15.797 4204 Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\IndexedDB\https_neuro.translate.yandex.ru_0.indexeddb.leveldb/000003.log 

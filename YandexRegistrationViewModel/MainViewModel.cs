@@ -211,13 +211,18 @@ namespace YandexRegistrationViewModel
         public async void RunTasks()
         {
             IsTaskStarted = true;
-            foreach (var task in YandexTasks)
-            {
-                if (task.SmsService is VacSMSHelper vacSmsHelper)
-                {
-                    vacSmsHelper.MainUrl = SmsServiceUrl;
-                }
-            }
+            //foreach (var task in YandexTasks)
+            //{
+            //    if (task.HasErrors)
+            //    {
+            //        IsTaskStarted = false;
+            //        return;
+            //    }
+            //    if (task.SmsService is VacSMSHelper vacSmsHelper)
+            //    {
+            //        vacSmsHelper.MainUrl = SmsServiceUrl;
+            //    }
+            //}
             await TaskHelper.RunTasks(YandexTasks, CountThreads, _dispatcher, _cancellationTokenSource.Token);
             IsTaskStarted = false;
         }
@@ -275,6 +280,10 @@ namespace YandexRegistrationViewModel
         public void LoadFromFile(string fileName)
         {
             YandexTasks = TaskHelper.ReadTasksFromFile(fileName);
+            foreach (var task in YandexTasks)
+            {
+                task.NotifyChangeAction = UpdateSortedTask;
+            }
         }
 
         public void SaveToFile(string fileName)

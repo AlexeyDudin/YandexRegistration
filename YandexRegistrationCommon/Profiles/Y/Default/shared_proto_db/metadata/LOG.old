@@ -1,0 +1,7 @@
+2025/08/12-17:19:47.440 322c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db\metadata is locked for recovering successfully
+2025/08/12-17:19:47.441 322c Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db\metadata/MANIFEST-000001
+2025/08/12-17:19:47.441 322c Recovering log #3
+2025/08/12-17:19:47.441 322c Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db\metadata/000003.log 
+2025/08/12-17:19:56.871 4c10 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db\metadata, waiting for background work finished
+2025/08/12-17:19:56.871 4c10 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db\metadata, background work finished
+2025/08/12-17:19:56.872 4c10 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\shared_proto_db\metadata unlocked successfully

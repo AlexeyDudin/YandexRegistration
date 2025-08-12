@@ -1,0 +1,4 @@
+2025/08/12-17:19:47.415 2480 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\chrome_cart_db is locked for recovering successfully
+2025/08/12-17:19:47.415 2480 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\chrome_cart_db, waiting for background work finished
+2025/08/12-17:19:47.415 2480 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\chrome_cart_db, background work finished
+2025/08/12-17:19:47.415 2480 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\chrome_cart_db unlocked successfully

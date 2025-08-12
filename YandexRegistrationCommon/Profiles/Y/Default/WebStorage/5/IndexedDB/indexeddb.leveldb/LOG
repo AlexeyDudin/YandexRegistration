@@ -1,0 +1,6 @@
+2025/08/09-23:51:46.765 4208 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\WebStorage\5\IndexedDB\indexeddb.leveldb is locked for recovering successfully
+2025/08/09-23:51:46.765 4208 Creating DB C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\WebStorage\5\IndexedDB\indexeddb.leveldb since it was missing.
+2025/08/09-23:51:46.773 4208 Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\WebStorage\5\IndexedDB\indexeddb.leveldb/MANIFEST-000001
+2025/08/09-23:52:31.076 4208 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\WebStorage\5\IndexedDB\indexeddb.leveldb, waiting for background work finished
+2025/08/09-23:52:31.076 4208 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\WebStorage\5\IndexedDB\indexeddb.leveldb, background work finished
+2025/08/09-23:52:31.081 4208 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\WebStorage\5\IndexedDB\indexeddb.leveldb unlocked successfully

@@ -1,0 +1,7 @@
+2025/08/12-17:20:07.403 4c2c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\GCM Store is locked for recovering successfully
+2025/08/12-17:20:07.404 4c2c Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\GCM Store/MANIFEST-000001
+2025/08/12-17:20:07.405 4c2c Recovering log #3
+2025/08/12-17:20:07.406 4c2c Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\GCM Store/000003.log 
+2025/08/12-17:20:11.658 6ad8 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\GCM Store, waiting for background work finished
+2025/08/12-17:20:11.660 6ad8 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\GCM Store, background work finished
+2025/08/12-17:20:11.750 6ad8 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\GCM Store unlocked successfully

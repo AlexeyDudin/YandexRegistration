@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using SeleniumProxyAuth;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows.Threading;
 using YandexRegistrationCommon.Infrastructure.APIHelper;
 using YandexRegistrationModel;
@@ -21,13 +22,18 @@ namespace YandexRegistrationCommon.Infrastructure
             var proxyServer = new SeleniumProxyServer();
             return Task.Run(() =>
             {
-                Parallel.ForEach(tasks, new ParallelOptions() { MaxDegreeOfParallelism = (int)threadCount, CancellationToken = cancellationToken }, async (task) =>
+                var result = Parallel.ForEach(tasks, new ParallelOptions() { MaxDegreeOfParallelism = (int)threadCount, CancellationToken = cancellationToken }, async (task) =>
                 {
+                    //foreach (Process proc in Process.GetProcessesByName("chrome"))
+                    //{
+                    //    proc.Kill();
+                    //}
                     using (var seleniumHelper = new SeleniumHelper(task))
                     {
                         await seleniumHelper.Run(dispatcher, proxyServer, cancellationToken);
                     }
                 });
+                var isCompleted = result.IsCompleted;
             }, cancellationToken);
         }
 

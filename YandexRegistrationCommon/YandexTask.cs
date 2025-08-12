@@ -7,7 +7,7 @@ using YandexRegistrationCommon;
 
 namespace YandexRegistrationModel
 {
-    public class YandexTask : INotifyPropertyChanged
+    public class YandexTask : IDataErrorInfo, INotifyPropertyChanged
     {
         private uint _id;
         private BrowserType _browserType = BrowserType.Chrome;
@@ -18,16 +18,22 @@ namespace YandexRegistrationModel
         private string _userNameForRegistration = string.Empty;
         private string _secondNameForRegistration = string.Empty;
         private string _referalUrl = string.Empty;
-        private bool _isReferalUrlUserChanged = false;
+        private bool _isMobileDevise = true;
         private User _registeredUser = null;
         private string _userAgent = "Mozilla/5.0 (Linux; Android 14; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.6478.122 Mobile Safari/537.36";
         private ISmsActivator _smsService;
+        private byte[] _browserUserProfile = null;
 
         public YandexTask(uint id)
         {
             _id = id;
             UserNameForRegistration = NameHelper.GetRandomName();
             SecondNameForRegistration = NameHelper.GetRandomSecondName();
+            (bool isMobile, string userAgent) newUserAgent = NameHelper.GetRandomUserAgent();
+            IsMobileDevise = newUserAgent.isMobile;
+            if (!IsMobileDevise)
+                BrowserType = BrowserType.YandexBrowser;
+            UserAgent = newUserAgent.userAgent;
         }
 
         public BrowserType BrowserType
@@ -36,19 +42,6 @@ namespace YandexRegistrationModel
             set
             {
                 _browserType = value;
-                if (!_isReferalUrlUserChanged)
-                {
-                    switch (BrowserType)
-                    {
-                        case BrowserType.YandexBrowser:
-                            _referalUrl = "https://yandex.ru/portal/set/default_search?retpath=https%3A%2F%2Fyandex.ru%2Fportal%2Fdefsearchpromo%2Fcode&source=6Fh0sP41TKKNn40849&utm_term=---autotargeting&banerid=1200006600&utm_campaign=rsya_promocodes_feb|118152200&utm_medium=rsya&partner_string=mkBRX5h1TnuF632835&from=direct_rsya&yclid=12933870030752841727&utm_content=5545661305|16870771503&utm_source=yandex";
-                            break;
-                        default:
-                            _referalUrl = "https://yandex.ru/portal/defsearchpromo/landing/ru_mobile400?partner=fYM1bbd1U7yNZ47082&offer_type=dXKT5C51U7yNt47078&utm_source=promocodes_ru&utm_medium=tbank400tel&utm_campaign=200&utm_content=250620250&clckid=6a234ddb";
-                            break;
-                    }
-                    OnPropertyChanged(nameof(ReferalUrl));
-                }
                 OnPropertyChanged();
             }
         }
@@ -170,8 +163,8 @@ namespace YandexRegistrationModel
             set
             {
                 _referalUrl = value;
-                _isReferalUrlUserChanged = true;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(HasErrors));
             }
         }
 
@@ -198,6 +191,7 @@ namespace YandexRegistrationModel
 
         public YandexTask Clone(uint newTaskId)
         {
+            (bool isMobile, string userAgent) newUserAgent = NameHelper.GetRandomUserAgent();
             return new YandexTask(newTaskId)
             {
                 BrowserType = this.BrowserType,
@@ -209,9 +203,12 @@ namespace YandexRegistrationModel
                 SmsService = this.SmsService,
                 Proxy = this.Proxy == null ? null : this.Proxy.Clone(),
                 NotifyChangeAction = this.NotifyChangeAction,
+                IsMobileDevise = newUserAgent.isMobile,
+                UserAgent = newUserAgent.userAgent,
             };
         }
 
+        [JsonIgnore]
         public Action<uint> NotifyChangeAction { get; set; }
         public string UserAgent
         {
@@ -220,6 +217,41 @@ namespace YandexRegistrationModel
             {
                 _userAgent = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public bool IsMobileDevise
+        {
+            get => _isMobileDevise;
+            set
+            {
+                _isMobileDevise = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public byte[] BrowserUserProfile
+        {
+            get => _browserUserProfile;
+            set
+            {
+                _browserUserProfile = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Error => null;
+
+        public bool HasErrors => string.IsNullOrEmpty(ReferalUrl);
+
+        public string this[string columnName]
+        {
+            get
+            {
+                if (columnName == nameof(this.ReferalUrl))
+                    if (string.IsNullOrEmpty(ReferalUrl))
+                        return "Ссылка не может быть пустой!";
+                return null;
             }
         }
 

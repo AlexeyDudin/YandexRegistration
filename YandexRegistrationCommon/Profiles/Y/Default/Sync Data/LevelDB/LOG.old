@@ -1,0 +1,7 @@
+2025/08/12-17:19:47.386 3cdc File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Sync Data\LevelDB is locked for recovering successfully
+2025/08/12-17:19:47.389 3cdc Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Sync Data\LevelDB/MANIFEST-000001
+2025/08/12-17:19:47.390 3cdc Recovering log #3
+2025/08/12-17:19:47.390 3cdc Reusing old log C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Sync Data\LevelDB/000003.log 
+2025/08/12-17:19:56.808 3e3c Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Sync Data\LevelDB, waiting for background work finished
+2025/08/12-17:19:56.808 3e3c Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Sync Data\LevelDB, background work finished
+2025/08/12-17:19:56.817 3e3c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Sync Data\LevelDB unlocked successfully

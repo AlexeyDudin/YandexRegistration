@@ -1,0 +1,6 @@
+2025/08/07-08:41:44.269 6f1c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Rules is locked for recovering successfully
+2025/08/07-08:41:44.270 6f1c Creating DB C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Rules since it was missing.
+2025/08/07-08:41:44.291 6f1c Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Rules/MANIFEST-000001
+2025/08/07-08:41:58.193 6f1c Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Rules, waiting for background work finished
+2025/08/07-08:41:58.194 6f1c Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Rules, background work finished
+2025/08/07-08:41:58.197 6f1c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Rules unlocked successfully

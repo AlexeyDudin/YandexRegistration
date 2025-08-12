@@ -194,50 +194,23 @@ namespace YandexRegistrationCommon.Infrastructure.APIHelper
             return await httpClient.GetByteArrayAsync(url);
         }
 
-        //private async List<Coord> GetCaptchaCoords(string mainBase64Image, string additionalBase64Image)
-        //{
-        //    int requestId = await SendRequest(mainBase64Image, additionalBase64Image);
+        public async Task SolvePhoneCapcha(WebDriverWait wait, IWebDriver webDriver)
+        {
+            var element = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.CssSelector("div.captcha__container")));
+            var urlMainImage = element.FindElement(By.TagName("img")).GetAttribute("src");
 
+            Normal text = new Normal(urlMainImage);
+            text.SetLang("ru");
+            await _solver.Solve(text);
 
-        //}
+            var result = await _solver.GetResult(text.Code);
 
-        //private async Task<int> SendRequest(string mainBase64Image, string additionalBase64Image)
-        //{
-        //    using var client = new HttpClient();
+            var inputElement = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//span.TextInput[.//input]")));
+            inputElement.SendKeys(result);
 
-        //    // URL API (замени на нужный)
-        //    var url = "https://api.rucaptcha.com/createTask"; // пример, нужно заменить на реальный API-эндпоинт
-
-        //    // Формируем JSON тело запроса
-        //    var request = new RequestCreateTaskDto()
-        //    {
-        //        clientKey = _apiKey,
-        //        task = new RequestBody()
-        //        {
-        //            body = mainBase64Image,
-        //            imgInstructions = additionalBase64Image
-        //        }
-        //    };
-
-        //    var json = JsonConvert.SerializeObject(request);
-
-        //    // Создаем контент с нужной кодировкой и Content-Type
-        //    var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        //    try
-        //    {
-        //        // Отправляем POST-запрос
-        //        HttpResponseMessage responseString = await client.PostAsync(url, content);
-
-        //        var response = JsonConvert.DeserializeObject<ResponseCreateTaskDTO>(await responseString.Content.ReadAsStringAsync());
-
-        //        return response.taskId;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+            var nextButton = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//button[.//span[text()='Продолжить']]")));
+            nextButton.Click();
+        }
     }
 
     internal class RequestBody

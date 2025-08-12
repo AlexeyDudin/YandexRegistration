@@ -1,0 +1,6 @@
+2025/08/12-17:00:50.056 6e10 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\File System\004\t\Paths is locked for recovering successfully
+2025/08/12-17:00:50.056 6e10 Creating DB C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\File System\004\t\Paths since it was missing.
+2025/08/12-17:00:50.064 6e10 Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\File System\004\t\Paths/MANIFEST-000001
+2025/08/12-17:02:26.197 6ce4 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\File System\004\t\Paths, waiting for background work finished
+2025/08/12-17:02:26.198 6ce4 Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\File System\004\t\Paths, background work finished
+2025/08/12-17:02:26.199 6ce4 File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\File System\004\t\Paths unlocked successfully

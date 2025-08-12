@@ -1,0 +1,6 @@
+2025/08/07-08:41:44.297 6f1c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Scripts is locked for recovering successfully
+2025/08/07-08:41:44.297 6f1c Creating DB C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Scripts since it was missing.
+2025/08/07-08:41:44.319 6f1c Reusing MANIFEST C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Scripts/MANIFEST-000001
+2025/08/07-08:41:58.189 6f1c Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Scripts, waiting for background work finished
+2025/08/07-08:41:58.189 6f1c Deletion DBImpl for C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Scripts, background work finished
+2025/08/07-08:41:58.191 6f1c File C:\Users\dudin\AppData\Local\Yandex\YandexBrowser\User Data\Default\Extension Scripts unlocked successfully
